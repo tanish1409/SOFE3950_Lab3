@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define NUM_THREADS 11
+#define NUM_THREADS 27
 #define SIZE 9
 
 typedef struct {
@@ -116,6 +116,10 @@ int main() {
         *(param->value) = i;
         pthread_create(&threads[threadIndex++], NULL, checkRow, (void*)param);
     }
+    // Join the threads are use to free unused memory
+    for (int i = 0; i < SIZE; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
     // Column checks
     for (int i = 0; i < SIZE; i++) {
@@ -123,6 +127,10 @@ int main() {
         param->value = (int*)malloc(sizeof(int));
         *(param->value) = i;
         pthread_create(&threads[threadIndex++], NULL, checkColumn, (void*)param);
+    }
+    // Join the threads are use to free unused memory
+    for (int i = 0; i < SIZE; i++) {
+        pthread_join(threads[i], NULL);
     }
 
     // Subgrid checks
@@ -133,8 +141,8 @@ int main() {
         pthread_create(&threads[threadIndex++], NULL, checkSubGrid, (void*)param);
     }
 
-    // Wait for all threads to finish
-    for (int i = 0; i < NUM_THREADS; i++) {
+    // Join the threads are use to free unused memory
+    for (int i = 0; i < SIZE; i++) {
         pthread_join(threads[i], NULL);
     }
 
